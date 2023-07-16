@@ -1,5 +1,7 @@
 from fastapi import APIRouter
-from .insurance import ins_router
+
+from insurance import ins_router
+
 
 router_v1 = APIRouter(prefix="/api/v1")
 

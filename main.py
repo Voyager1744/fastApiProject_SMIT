@@ -1,8 +1,7 @@
 from fastapi import FastAPI
-from tortoise import Tortoise
 from tortoise.contrib.fastapi import register_tortoise
 
-from app.api.api import router_v1
+from routs import router_v1
 
 app = FastAPI()
 
@@ -16,14 +15,14 @@ TORTOISE_ORM = {
                 "database": "insurance_db",
                 "host": "localhost",
                 "port": "5432",
-                "user": "postgres",
-                "password": "postgres",
+                "user": "tortoise",
+                "password": "qwerty123",
             },
         },
     },
     "apps": {
         "models": {
-            "models": ["app.api.models"],
+            "models": ["models"],
             "default_connection": "default",
         },
     },
@@ -31,14 +30,3 @@ TORTOISE_ORM = {
 
 # Register Tortoise ORM with FastAPI
 register_tortoise(app, config=TORTOISE_ORM)
-
-
-@app.on_event("startup")
-async def startup():
-    await Tortoise.init(config=TORTOISE_ORM)
-    await Tortoise.generate_schemas()
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    await Tortoise.close_connections()
