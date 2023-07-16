@@ -1,7 +1,8 @@
 import json
 import os
 
-from fastapi import APIRouter, Path, Depends
+from fastapi import APIRouter, Path
+from .models import Insurance
 
 ins_router = APIRouter(
     prefix="/insurance",
@@ -20,8 +21,6 @@ async def get_rate(date, cargo_type):
     for date_str in tariffs[date]:
         if date_str["cargo_type"] == cargo_type:
             return date_str["rate"]
-        else:
-            return "Cargo type not found"
 
 
 @ins_router.get(
@@ -36,11 +35,18 @@ async def get_insurance(
         cargo_type: str = Path(..., description="Glass, Other"),
         declared_value: float = Path(...),
 ):
+    insurance = await Insurance.filter(cargo_type=cargo_type).first()
+    if insurance is None:
+        insurance = Insurance(cargo_type=cargo_type,
+                              declared_value=declared_value)
+        await insurance.save()
+
     rate = await get_rate(date_string, cargo_type)
+
     if rate is None:
         return 'The date is not included in the tariff'
     try:
-        cost = float(rate) * declared_value
+        cost = float(rate) * float(insurance.declared_value)
     except ValueError:
         return 'The declared value is not a number or cargo type not found'
     return {"Cost_of_insurance": f"{cost:.2f}"}

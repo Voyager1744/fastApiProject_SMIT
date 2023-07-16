@@ -1,5 +1,4 @@
 from tortoise import Model, fields
-from tortoise.contrib.pydantic import pydantic_model_creator
 
 
 class Insurance(Model):
