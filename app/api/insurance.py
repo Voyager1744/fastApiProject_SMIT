@@ -16,6 +16,8 @@ with open(basedir + "/tariffs.json", "r") as f:
 
 
 async def get_rate(date, cargo_type):
+    """Получить ставку страхования по дате и типу груза."""
+
     if date not in tariffs:
         return None
     for date_str in tariffs[date]:
@@ -35,6 +37,8 @@ async def get_insurance(
         cargo_type: str = Path(..., description="Glass, Other"),
         declared_value: float = Path(...),
 ):
+    """Получить стоимость страхования."""
+
     insurance = await Insurance.filter(cargo_type=cargo_type).first()
     if insurance is None:
         insurance = Insurance(cargo_type=cargo_type,
